@@ -1,48 +1,48 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import AudioManager from "../utils/AudioManager";
+import { useCallback, useEffect } from "react";
+import {
+	cleanupAudioManager,
+	getAudioManager,
+	initializeAudioManager,
+} from "../utils/audioManagerInstance";
 
 export const useAudio = () => {
-	const [audioManager, setAudioManager] = useState(null);
-
-	function destroy() {
-		if (audioManager) {
-			audioManager.destroy();
-		}
-	}
-
 	useEffect(() => {
+		// Initialize audio manager and track this instance
+		initializeAudioManager();
+
+		// Cleanup function - will only destroy on actual unmount, not hot reload
 		return () => {
-			destroy();
+			cleanupAudioManager();
 		};
 	}, []);
 
-	function init() {
-		setAudioManager(new AudioManager());
-	}
+	const loadSound = useCallback(async (name, url) => {
+		const manager = getAudioManager();
+		console.log(manager);
+		await manager.loadSound(name, url);
+	}, []);
 
-	const loadSound = useCallback(
-		async (name, url) => {
-			console.log(audioManager);
-			await audioManager.loadSound(name, url);
-		},
-		[audioManager],
-	);
+	const playSound = useCallback((name, volume) => {
+		const manager = getAudioManager();
+		setTimeout(() => {
+			manager.playSound(name, volume);
+		}, 500);
+	}, []);
 
-	const playSound = useCallback(
-		(name, volume) => {
-			setTimeout(() => {
-				audioManager.playSound(name, volume);
-			}, 1000);
-		},
-		[audioManager],
-	);
+	const playMultipleSounds = useCallback((soundNames) => {
+		const manager = getAudioManager();
+		manager.playMultipleSounds(soundNames);
+	}, []);
 
-	const playMultipleSounds = useCallback(
-		(soundNames) => {
-			audioManager.playMultipleSounds(soundNames);
-		},
-		[audioManager],
-	);
+	const stopSound = useCallback((name) => {
+		const manager = getAudioManager();
+		manager.stopSound(name);
+	}, []);
 
-	return { loadSound, playSound, playMultipleSounds, init, destroy };
+	const stopAllSounds = useCallback(() => {
+		const manager = getAudioManager();
+		manager.stopAllSounds();
+	}, []);
+
+	return { loadSound, playSound, playMultipleSounds, stopSound, stopAllSounds };
 };
