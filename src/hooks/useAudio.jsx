@@ -32,7 +32,7 @@ export const useAudio = () => {
 		(name, volume) => {
 			setTimeout(() => {
 				audioManager.playSound(name, volume);
-			}, 500);
+			}, 1000);
 		},
 		[audioManager],
 	);

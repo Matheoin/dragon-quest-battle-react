@@ -16,13 +16,13 @@ function Battle() {
 		}
 	}, [coreLoop]);
 
-	function onMonsterClick(monster_id, monster_name) {
-		if (currentEvent.type !== EVENTS_TYPES.ATTACK_SELECTION) {
-			return;
-		}
-		console.log(monster_id);
-		inflictDamageMonster(currentEvent.player_id, monster_id, monster_name);
-	}
+	// function onMonsterClick(monster_id, monster_name) {
+	// 	if (currentEvent.type !== EVENTS_TYPES.ATTACK_SELECTION) {
+	// 		return;
+	// 	}
+	// 	console.log(monster_id);
+	// 	inflictDamageMonster(currentEvent.player_id, monster_id, monster_name);
+	// }
 
 	return (
 		<div className="battle">
@@ -55,7 +55,7 @@ function Battle() {
 												? "monsters selectable"
 												: "monsters"
 										}
-										onClick={() => onMonsterClick(monstre.id, monstre.name)}
+										// onClick={() => onMonsterClick(monstre.id, monstre.name)}
 									>
 										<img src={monstre.imgUrl} />
 										{/* <SpriteAnimator 
@@ -84,13 +84,13 @@ function Battle() {
 							intro={currentEvent.intro}
 						/>
 					)}
-					{currentEvent.type === EVENTS_TYPES.ATTACK_SELECTION && (
+					{/* {currentEvent.type === EVENTS_TYPES.ATTACK_SELECTION && (
 						<DialogBox
 							text="Choisissez un monstre"
 							id={1}
 							action={() => null}
 						/>
-					)}
+					)} */}
 				</div>
 			)}
 		</div>
