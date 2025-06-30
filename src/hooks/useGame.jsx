@@ -8,6 +8,7 @@ export const EVENTS_TYPES = {
 	MONSTER_TURN: "MONSTER_TURN",
 	END_TURN: "END_TURN",
 	ATTACK_SELECTION: "ATTACK_SELECTION",
+	ANIMATION_SOUND: "ANIMATION_SOUND",
 };
 
 const DEFAULT_MONSTRES = [
@@ -28,6 +29,20 @@ function generateActionBox(text, actions, options = {}) {
 		text,
 		actions,
 		...options,
+	};
+}
+function generateAnimationAndSound(
+	{ soud_name, sound_duration, animation_name, animation_duration, time_out },
+	action,
+) {
+	return {
+		type: EVENTS_TYPES.ANIMATION_SOUND,
+		soud_name,
+		sound_duration,
+		animation_name,
+		animation_duration,
+		time_out,
+		action,
 	};
 }
 function generateMonsters() {
@@ -90,13 +105,13 @@ export const GameProvider = ({ children }) => {
 		next();
 	}
 
-	function onAttaque(player_id) {
-		setCoreLoop((prevLoop) => {
-			prevLoop.splice(1, 0, { type: EVENTS_TYPES.ATTACK_SELECTION, player_id });
-			return prevLoop;
-		});
-		next();
-	}
+	// function onAttaque(player_id) {
+	// 	setCoreLoop((prevLoop) => {
+	// 		prevLoop.splice(1, 0, { type: EVENTS_TYPES.ATTACK_SELECTION, player_id });
+	// 		return prevLoop;
+	// 	});
+	// 	next();
+	// }
 
 	function inflictDamageMonster(player_id, monster_id, monster_name) {
 		const player = joueurs.find((joueur) => joueur.id === player_id);
@@ -108,34 +123,37 @@ export const GameProvider = ({ children }) => {
 					next();
 				}),
 				// todo: ajouter animation et sond
-				generateBox("audio + animation", () => {
-					const degats = 10;
-					setMonstres((prevMonstres) => {
-						const newMonstres = [...prevMonstres];
-						for (let i = 0; i < newMonstres.length; i++) {
-							if (newMonstres[i].id === monster_id) {
-								newMonstres[i] = {
-									...newMonstres[i],
-									pv: newMonstres[i].pv - degats,
-								};
-								break;
+				generateAnimationAndSound(
+					{ soud_name: "attack_slash", sound_duration: 1, time_out: 1.5 },
+					() => {
+						const degats = 10;
+						setMonstres((prevMonstres) => {
+							const newMonstres = [...prevMonstres];
+							for (let i = 0; i < newMonstres.length; i++) {
+								if (newMonstres[i].id === monster_id) {
+									newMonstres[i] = {
+										...newMonstres[i],
+										pv: newMonstres[i].pv - degats,
+									};
+									break;
+								}
 							}
-						}
-						return newMonstres;
-					});
-					setCoreLoop((prevLoop) => {
-						prevLoop.splice(
-							1,
-							0,
-							generateBox(
-								`${player.name} inflige ${degats} dégâts à ${monster_name}`,
-								() => next(),
-							),
-						);
-						return prevLoop;
-					});
-					next();
-				}),
+							return newMonstres;
+						});
+						setCoreLoop((prevLoop) => {
+							prevLoop.splice(
+								1,
+								0,
+								generateBox(
+									`${player.name} inflige ${degats} dégâts à ${monster_name}`,
+									() => next(),
+								),
+							);
+							return prevLoop;
+						});
+						next();
+					},
+				),
 			);
 			return prevLoop;
 		});
@@ -317,7 +335,7 @@ export const GameProvider = ({ children }) => {
 		if (gameStart) {
 			console.log("Game as starting");
 
-			playSound("battle_theme", 0.5);
+			playSound("battle_theme", 1);
 
 			if (coreLoop.length === 0) {
 				generateInitialEvents();
@@ -329,6 +347,7 @@ export const GameProvider = ({ children }) => {
 
 	useEffect(() => {
 		loadSound("battle_theme", "audio/battle_theme.mp3");
+		loadSound("attack_slash", "audio/attack_slash.wav");
 	}, []);
 
 	useEffect(() => {
@@ -346,6 +365,13 @@ export const GameProvider = ({ children }) => {
 				return prevLoop;
 			});
 			next();
+		}
+		if (event?.type === EVENTS_TYPES.ANIMATION_SOUND) {
+			playSound(event.soud_name, 0.5);
+			setTimeout(() => {
+				event.action();
+				console.log("time_out");
+			}, event.time_out * 1000);
 		}
 	}, [coreLoop[0]]);
 

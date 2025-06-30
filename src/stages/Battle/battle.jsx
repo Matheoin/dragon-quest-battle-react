@@ -58,9 +58,16 @@ function Battle() {
 										// onClick={() => onMonsterClick(monstre.id, monstre.name)}
 									>
 										<img src={monstre.imgUrl} />
-										{/* <SpriteAnimator 
-											sprite: 
-										/> */}
+										<SpriteAnimator
+											sprite="attack_animation/weapon_animation.png"
+											width={131}
+											height={111}
+											fps={1}
+											frame={0}
+											stopLastFrame={true}
+											frameCount={5}
+											scale={2}
+										/>
 									</div>
 								);
 							})}
