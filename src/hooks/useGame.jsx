@@ -19,8 +19,15 @@ const DEFAULT_MONSTRES = [
 
 const GameContext = createContext(undefined);
 
-function generateBox(text, action) {
-	return { type: EVENTS_TYPES.BOX, id: crypto.randomUUID(), text, action };
+function generateBox(text, action, options, monster_id) {
+	return {
+		type: EVENTS_TYPES.BOX,
+		id: crypto.randomUUID(),
+		text,
+		action,
+		...options,
+		monster_id,
+	};
 }
 function generateActionBox(text, actions, options = {}) {
 	return {
@@ -112,14 +119,6 @@ export const GameProvider = ({ children }) => {
 	function onFight() {
 		next();
 	}
-
-	// function onAttaque(player_id) {
-	// 	setCoreLoop((prevLoop) => {
-	// 		prevLoop.splice(1, 0, { type: EVENTS_TYPES.ATTACK_SELECTION, player_id });
-	// 		return prevLoop;
-	// 	});
-	// 	next();
-	// }
 
 	function inflictDamageMonster(player_id, monster_id, monster_name) {
 		const player = joueurs.find((joueur) => joueur.id === player_id);
@@ -262,8 +261,17 @@ export const GameProvider = ({ children }) => {
 			prevLoop.splice(
 				1,
 				0,
-				generateBox(`${monster.name} attack ${player.name}`, () =>
-					inflictDamagePlayer(player.id, player.name, monster_id, monster.name),
+				generateBox(
+					`${monster.name} attack ${player.name}`,
+					() =>
+						inflictDamagePlayer(
+							player.id,
+							player.name,
+							monster_id,
+							monster.name,
+						),
+					{ prevEventType: EVENTS_TYPES.MONSTER_TURN },
+					monster_id,
 				),
 			);
 			return prevLoop;

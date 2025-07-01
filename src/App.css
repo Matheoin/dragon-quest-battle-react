@@ -88,9 +88,8 @@ body,
 	align-items: center;
 	justify-content: center;
 }
-.monsters.selectable:hover {
+.monsters.turn {
 	transform: scale(1.2);
-	cursor: pointer;
 }
 .animation {
 	position: absolute;

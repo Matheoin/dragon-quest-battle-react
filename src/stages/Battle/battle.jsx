@@ -5,7 +5,7 @@ import DialogAction from "../../components/DialogAction";
 import Animation from "../../components/Animation";
 import { useEffect, useState } from "react";
 import StatsJoueur from "../../components/StatsJoueur";
-import { SpriteAnimator } from "react-sprite-animator";
+import classNames from "classnames";
 
 function Battle() {
 	const { coreLoop, monstres, joueurs, inflictDamageMonster } = useGame();
@@ -51,11 +51,13 @@ function Battle() {
 								return (
 									<div
 										key={monstre.id}
-										className={
-											currentEvent?.type === EVENTS_TYPES.ATTACK_SELECTION
-												? "monsters selectable"
-												: "monsters"
-										}
+										className={classNames("monsters", {
+											turn:
+												currentEvent?.type === EVENTS_TYPES.BOX &&
+												currentEvent.prevEventType ===
+													EVENTS_TYPES.MONSTER_TURN &&
+												currentEvent.monster_id === monstre.id,
+										})}
 										// onClick={() => onMonsterClick(monstre.id, monstre.name)}
 									>
 										<img src={monstre.imgUrl} />
