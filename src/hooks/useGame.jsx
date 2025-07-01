@@ -42,9 +42,11 @@ function generateAnimationAndSound(
 	{
 		soud_name,
 		sound_duration,
+		animation_id,
 		animation_name,
 		animation_duration,
 		monster_id,
+		player_id,
 		time_out,
 	},
 	action,
@@ -53,9 +55,11 @@ function generateAnimationAndSound(
 		type: EVENTS_TYPES.ANIMATION_SOUND,
 		soud_name,
 		sound_duration,
+		animation_id,
 		animation_name,
 		animation_duration,
 		monster_id,
+		player_id,
 		time_out,
 		action,
 	};
@@ -90,6 +94,10 @@ export const GameProvider = ({ children }) => {
 		{ name: "Héro", pv: 27, mp: 20, id: 1 },
 		{ name: "Erik", pv: 24, mp: 14, id: 2 },
 		{ name: "Véronica", pv: 20, mp: 24, id: 3 },
+	]);
+	const [skills, setSkills] = useState([
+		{ id: "thunder", name: "Thunder" },
+		{ id: "fire_ball", name: "Fire ball" },
 	]);
 
 	console.log("coreLoop", coreLoop);
@@ -132,8 +140,9 @@ export const GameProvider = ({ children }) => {
 				// todo: ajouter animation et sond
 				generateAnimationAndSound(
 					{
+						animation_id: "attack",
 						soud_name: "attack_slash",
-						sound_duration: 1,
+						sound_duration: 0,
 						monster_id,
 						time_out: 1,
 					},
@@ -181,35 +190,43 @@ export const GameProvider = ({ children }) => {
 			prevLoop.splice(
 				1,
 				0,
-				generateBox("audio + animation", () => {
-					const degats = 1;
-					setJoueurs((prevJoueurs) => {
-						const newJoueurs = [...prevJoueurs];
-						for (let i = 0; i < newJoueurs.length; i++) {
-							if (newJoueurs[i].id === player_id) {
-								newJoueurs[i] = {
-									...newJoueurs[i],
-									pv: newJoueurs[i].pv - degats,
-								};
-								break;
+				generateAnimationAndSound(
+					{
+						soud_name: "attack_monster",
+						sound_duration: 1,
+						player_id,
+						time_out: 0,
+					},
+					() => {
+						const degats = 1;
+						setJoueurs((prevJoueurs) => {
+							const newJoueurs = [...prevJoueurs];
+							for (let i = 0; i < newJoueurs.length; i++) {
+								if (newJoueurs[i].id === player_id) {
+									newJoueurs[i] = {
+										...newJoueurs[i],
+										pv: newJoueurs[i].pv - degats,
+									};
+									break;
+								}
 							}
-						}
-						console.log(newJoueurs);
-						return newJoueurs;
-					});
-					setCoreLoop((prevLoop) => {
-						prevLoop.splice(
-							1,
-							0,
-							generateBox(
-								`${monster_name} inflige ${degats} à ${player_name}`,
-								() => next(),
-							),
-						);
-						return prevLoop;
-					});
-					next();
-				}),
+							console.log(newJoueurs);
+							return newJoueurs;
+						});
+						setCoreLoop((prevLoop) => {
+							prevLoop.splice(
+								1,
+								0,
+								generateBox(
+									`${monster_name} inflige ${degats} à ${player_name}`,
+									() => next(),
+								),
+							);
+							return prevLoop;
+						});
+						next();
+					},
+				),
 			);
 			return prevLoop;
 		});
@@ -241,7 +258,32 @@ export const GameProvider = ({ children }) => {
 								}),
 						},
 						{ id: "idParade", text: "Parade", onclick: () => {} },
-						{ id: "idSkills", text: "Skills", onclick: () => {} },
+						{
+							id: "idSkills",
+							text: "Skills",
+							onclick: () => {},
+							actions: skills.map((skill) => {
+								return {
+									id: skill.id,
+									text: skill.name,
+									onclick: () => {},
+									actions: monstres
+										.filter((monstre) => monstre.pv > 0)
+										.map((monstre) => {
+											return {
+												id: monstre.id,
+												text: monstre.name,
+												onclick: () =>
+													inflictDamageMonster(
+														player_id,
+														monstre.id,
+														monstre.name,
+													),
+											};
+										}),
+								};
+							}),
+						},
 						{ id: "idObjet", text: "Objets", onclick: () => {} },
 						{ id: "idFuite", text: "Fuite", onclick: onFuite },
 					],
@@ -369,6 +411,7 @@ export const GameProvider = ({ children }) => {
 	useEffect(() => {
 		loadSound("battle_theme", "audio/battle_theme.mp3");
 		loadSound("attack_slash", "audio/attack_slash.wav");
+		loadSound("attack_monster", "audio/attack_monster.wav");
 	}, []);
 
 	useEffect(() => {
@@ -388,7 +431,7 @@ export const GameProvider = ({ children }) => {
 			next();
 		}
 		if (event?.type === EVENTS_TYPES.ANIMATION_SOUND) {
-			playSound(event.soud_name, 0.5);
+			playSound(event.soud_name, 1);
 			setTimeout(() => {
 				event.action();
 				console.log("time_out");

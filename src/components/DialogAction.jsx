@@ -3,16 +3,34 @@ import { useGame } from "../hooks/useGame";
 
 function DialogAction({ text, id, actions, intro = false }) {
 	const { coreLoop, setCoreLoop, next } = useGame();
-	const [diplaySubaction, setDisplaySubAction] = useState(false);
+	const [diplaySubAction, setDisplaySubAction] = useState(false);
+	const [displayLastAction, setDisplayLastAction] = useState(false);
 	const [subActions, setSubActions] = useState([]);
+	const [lastActions, setLastActions] = useState([]);
 
 	function onClick(action) {
+		setDisplayLastAction(false);
+		setLastActions([]);
+		setDisplaySubAction(false);
+		setSubActions([]);
+
 		if (action.onclick && !action.actions) {
 			action.onclick();
 			return;
 		}
 		setDisplaySubAction(true);
 		setSubActions(action.actions);
+	}
+	function onSubClick(subAction) {
+		setDisplayLastAction(false);
+		setLastActions([]);
+
+		if (subAction.onclick && !subAction.actions) {
+			subAction.onclick();
+			return;
+		}
+		setDisplayLastAction(true);
+		setLastActions(subAction.actions);
 	}
 
 	return (
@@ -33,14 +51,39 @@ function DialogAction({ text, id, actions, intro = false }) {
 					})}
 				</div>
 			</div>
-			{diplaySubaction && (
+			{diplaySubAction && (
 				<div className="dialog-sub-action">
 					<div className="action-buttons">
-						{subActions.map((action) => {
+						{subActions.map((subAction) => {
 							return (
-								<button key={action.id} type="button" onClick={action.onclick}>
-									{action.text}
-								</button>
+								<>
+									<button
+										key={subAction.id}
+										type="button"
+										onClick={() => onSubClick(subAction)}
+									>
+										{subAction.text}
+									</button>
+								</>
+							);
+						})}
+					</div>
+				</div>
+			)}
+			{displayLastAction && (
+				<div className="dialog-sub-action">
+					<div className="action-buttons">
+						{lastActions.map((lastAction) => {
+							return (
+								<>
+									<button
+										key={lastAction.id}
+										type="button"
+										onClick={lastAction.onclick}
+									>
+										{lastAction.text}
+									</button>
+								</>
 							);
 						})}
 					</div>

@@ -17,14 +17,6 @@ function Battle() {
 		}
 	}, [coreLoop]);
 
-	// function onMonsterClick(monster_id, monster_name) {
-	// 	if (currentEvent.type !== EVENTS_TYPES.ATTACK_SELECTION) {
-	// 		return;
-	// 	}
-	// 	console.log(monster_id);
-	// 	inflictDamageMonster(currentEvent.player_id, monster_id, monster_name);
-	// }
-
 	return (
 		<div className="battle">
 			{monstres && (
@@ -58,7 +50,6 @@ function Battle() {
 													EVENTS_TYPES.MONSTER_TURN &&
 												currentEvent.monster_id === monstre.id,
 										})}
-										// onClick={() => onMonsterClick(monstre.id, monstre.name)}
 									>
 										<img src={monstre.imgUrl} />
 										<Animation monster_id={monstre.id} />
