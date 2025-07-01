@@ -77,13 +77,23 @@ body,
 	font-size: 22px;
 }
 .monsters {
+	position: relative;
 	padding: 15px;
 	transition: 250ms;
 	will-change: transform;
+	width: 130px;
+	height: 110px;
+	vertical-align: middle;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 .monsters.selectable:hover {
 	transform: scale(1.2);
 	cursor: pointer;
+}
+.animation {
+	position: absolute;
 }
 
 /* bot-container */

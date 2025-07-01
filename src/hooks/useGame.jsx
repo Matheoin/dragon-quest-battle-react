@@ -32,7 +32,14 @@ function generateActionBox(text, actions, options = {}) {
 	};
 }
 function generateAnimationAndSound(
-	{ soud_name, sound_duration, animation_name, animation_duration, time_out },
+	{
+		soud_name,
+		sound_duration,
+		animation_name,
+		animation_duration,
+		monster_id,
+		time_out,
+	},
 	action,
 ) {
 	return {
@@ -41,6 +48,7 @@ function generateAnimationAndSound(
 		sound_duration,
 		animation_name,
 		animation_duration,
+		monster_id,
 		time_out,
 		action,
 	};
@@ -124,7 +132,12 @@ export const GameProvider = ({ children }) => {
 				}),
 				// todo: ajouter animation et sond
 				generateAnimationAndSound(
-					{ soud_name: "attack_slash", sound_duration: 1, time_out: 1.5 },
+					{
+						soud_name: "attack_slash",
+						sound_duration: 1,
+						monster_id,
+						time_out: 1,
+					},
 					() => {
 						const degats = 10;
 						setMonstres((prevMonstres) => {

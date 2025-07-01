@@ -2,6 +2,7 @@ import "./battle.css";
 import { EVENTS_TYPES, useGame } from "../../hooks/useGame";
 import DialogBox from "../../components/DialogBox";
 import DialogAction from "../../components/DialogAction";
+import Animation from "../../components/Animation";
 import { useEffect, useState } from "react";
 import StatsJoueur from "../../components/StatsJoueur";
 import { SpriteAnimator } from "react-sprite-animator";
@@ -58,16 +59,7 @@ function Battle() {
 										// onClick={() => onMonsterClick(monstre.id, monstre.name)}
 									>
 										<img src={monstre.imgUrl} />
-										<SpriteAnimator
-											sprite="attack_animation/weapon_animation.png"
-											width={131}
-											height={111}
-											fps={1}
-											frame={0}
-											stopLastFrame={true}
-											frameCount={5}
-											scale={2}
-										/>
+										<Animation monster_id={monstre.id} />
 									</div>
 								);
 							})}
