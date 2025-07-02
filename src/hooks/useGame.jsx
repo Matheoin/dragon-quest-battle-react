@@ -96,7 +96,7 @@ export const GameProvider = ({ children }) => {
 		{ name: "Véronica", pv: 20, mp: 24, id: 3 },
 	]);
 	const [skills, setSkills] = useState([
-		{ id: "thunder", name: "Thunder" },
+		{ id: "light", name: "Light" },
 		{ id: "fire_ball", name: "Fire ball" },
 	]);
 
@@ -128,7 +128,12 @@ export const GameProvider = ({ children }) => {
 		next();
 	}
 
-	function inflictDamageMonster(player_id, monster_id, monster_name) {
+	function inflictDamageMonster(
+		player_id,
+		monster_id,
+		monster_name,
+		attack_type = "attack",
+	) {
 		const player = joueurs.find((joueur) => joueur.id === player_id);
 		setCoreLoop((prevLoop) => {
 			prevLoop.splice(
@@ -141,6 +146,7 @@ export const GameProvider = ({ children }) => {
 				generateAnimationAndSound(
 					{
 						animation_id: "attack",
+						animation_name: attack_type,
 						soud_name: "attack_slash",
 						sound_duration: 0,
 						monster_id,
@@ -253,7 +259,12 @@ export const GameProvider = ({ children }) => {
 										id: monstre.id,
 										text: monstre.name,
 										onclick: () =>
-											inflictDamageMonster(player_id, monstre.id, monstre.name),
+											inflictDamageMonster(
+												player_id,
+												monstre.id,
+												monstre.name,
+												"attack",
+											),
 									};
 								}),
 						},
@@ -278,6 +289,7 @@ export const GameProvider = ({ children }) => {
 														player_id,
 														monstre.id,
 														monstre.name,
+														skill.id,
 													),
 											};
 										}),
