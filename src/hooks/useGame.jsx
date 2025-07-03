@@ -109,6 +109,7 @@ export const GameProvider = ({ children }) => {
 	const resetGame = () => {
 		setGameReady(false);
 		setGameStart(false);
+
 		setCoreLoop((prevLoop) => {
 			prevLoop.splice(0, prevLoop.length);
 			return prevLoop;
@@ -119,6 +120,7 @@ export const GameProvider = ({ children }) => {
 	const onFuite = () => {
 		setCoreLoop((prevLoop) => {
 			prevLoop.splice(1, 0, generateBox("Vous avez pris la fuite", resetGame));
+			playSound("escape", 1);
 			return prevLoop;
 		});
 		next();
@@ -410,7 +412,7 @@ export const GameProvider = ({ children }) => {
 		if (gameStart) {
 			console.log("Game as starting");
 
-			playSound("battle_theme", 1);
+			playSound("battle_theme", 0.8);
 
 			if (coreLoop.length === 0) {
 				generateInitialEvents();
@@ -422,8 +424,12 @@ export const GameProvider = ({ children }) => {
 
 	useEffect(() => {
 		loadSound("battle_theme", "audio/battle_theme.mp3");
+		loadSound("select_onclick", "audio/select_onclick.wav");
+		loadSound("select_onclick_monster", "audio/select_onclick_monster.wav");
 		loadSound("attack_slash", "audio/attack_slash.wav");
 		loadSound("attack_monster", "audio/attack_monster.wav");
+		loadSound("victoire", "audio/victoire.wav");
+		loadSound("escape", "audio/escape.wav");
 	}, []);
 
 	useEffect(() => {
@@ -473,6 +479,7 @@ export const GameProvider = ({ children }) => {
 		if (monstres.every((monstre) => monstre.pv <= 0)) {
 			setCoreLoop((prevLoop) => {
 				prevLoop.splice(1, 0, generateBox("Victoire", resetGame));
+				playSound("victoire", 1);
 				return prevLoop;
 			});
 			next();

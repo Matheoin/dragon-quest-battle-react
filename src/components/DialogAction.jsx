@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useGame } from "../hooks/useGame";
+import { useAudio } from "../hooks/useAudio";
 
 function DialogAction({ text, id, actions, intro = false }) {
 	const { coreLoop, setCoreLoop, next } = useGame();
+	const { playSound } = useAudio();
 	const [diplaySubAction, setDisplaySubAction] = useState(false);
 	const [displayLastAction, setDisplayLastAction] = useState(false);
 	const [subActions, setSubActions] = useState([]);
@@ -15,11 +17,13 @@ function DialogAction({ text, id, actions, intro = false }) {
 		setSubActions([]);
 
 		if (action.onclick && !action.actions) {
+			playSound("select_onclick", 1);
 			action.onclick();
 			return;
 		}
 		setDisplaySubAction(true);
 		setSubActions(action.actions);
+		playSound("select_onclick", 1);
 	}
 	function onSubClick(subAction) {
 		setDisplayLastAction(false);
@@ -27,10 +31,19 @@ function DialogAction({ text, id, actions, intro = false }) {
 
 		if (subAction.onclick && !subAction.actions) {
 			subAction.onclick();
+			playSound("select_onclick_monster", 1);
 			return;
 		}
 		setDisplayLastAction(true);
 		setLastActions(subAction.actions);
+		playSound("select_onclick", 1);
+	}
+	function onLastClick(lastAction) {
+		if (lastAction.onclick && !lastAction.actions) {
+			lastAction.onclick();
+			playSound("select_onclick_monster", 1);
+			return;
+		}
 	}
 
 	return (
@@ -79,7 +92,7 @@ function DialogAction({ text, id, actions, intro = false }) {
 									<button
 										key={lastAction.id}
 										type="button"
-										onClick={lastAction.onclick}
+										onClick={() => onLastClick(lastAction)}
 									>
 										{lastAction.text}
 									</button>
